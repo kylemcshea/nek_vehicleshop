@@ -200,17 +200,34 @@ driveTest = function(model, spawner)
                     show = true;
                     text = _('notification_1').. "" ..tostring(sec).. "" .._('notification_2');
                 })
-            elseif sec <= 0 then
-                print("Se acabo")
+            elseif sec <= 0 then 
                 inTest = false
+                -- Kick out test driver
                 TaskLeaveVehicle(PlayerPedId(), testCar)
+                -- Only fire this code if there are passengers in the test car. 
+                if GetVehicleNumberOfPassengers(testCar) > 0 then
+                    numSeats = GetVehicleMaxNumberOfPassengers(testCar)
+                    -- Grab each PED from each seat starting from 2+
+                    for seat = 2, seat <= numSeats do
+                        -- Determine if seat is empty.
+                        pedInSeat = GetPedInVehicleSeat(testCar, seat)
+                        if pedInSeat > 0 then
+                            -- Vacate the car if ped in seat.
+                            TaskLeaveVehicle(pedInSeat, testCar, 1)
+                            -- Bring them back to VS.
+                            if Config['VS']['BackToVSAfterTest'] then
+                                SetEntityCoords(pedInSeat, coords)
+                            end
+                        end
+                    end
+                end
+
                 Wait(2500)
                 NetworkFadeOutEntity(testCar, true, false)
                 SendNUIMessage({
                     show = false;
                 })
                 Wait(1500)
-		        DeleteVehicle(testCar)
                 if Config['VS']['BackToVSAfterTest'] then
                     SetEntityCoords(PlayerPedId(), coords)
                 end
