@@ -39,7 +39,7 @@ spawnDeleters = function()
     while true do
         local msec = 750
         local entity = PlayerPedId()
-        local car = GetVehiclePedIsIn(entity)
+        local car = GetVehiclePedIsIn(entity, false)
         local pos = GetEntityCoords(entity)
         local isIn = IsPedInAnyVehicle(entity)
         for k, v in pairs(Config['VS']['Sellers']['Locations']) do
